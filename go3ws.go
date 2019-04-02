@@ -11,6 +11,7 @@ import (
 var (
 	i3socket *i3ipc.IPCSocket
 	rename bool
+	move bool
 )
 
 
@@ -37,16 +38,21 @@ func setWS() {
 	ws, _ := i3socket.GetWorkspaces()
 	wStrAll := getWSstr(ws)
 	wStr := selector(wStrAll)
-	if rename {
+	switch {
+	case rename == true:
 		i3socket.Command("rename workspace to " + wStr)
-	}
+	case move == true:
+		i3socket.Command("move container to workspace " + wStr)
+	default:
 		i3socket.Command("workspace " + wStr)
+	}
 }
 
 
 
 func main() {
 	flag.BoolVar(&rename, "rename", false, "rename workpace")
+	flag.BoolVar(&move, "move", false, "move to workpace")
 	flag.Parse()
 	i3socket, _ = i3ipc.GetIPCSocket()
 	setWS()
